@@ -2,8 +2,8 @@
 <p align="center">
   <img src="./art/cover.svg" width="350px"><!-- YS0 -->
   <br><br>
-  A collection of GitHub components to easily display basic information about a GitHub user or repository.<br><br>
-  This can, for example, be used to display the number of stars of a repository on your portfolio website, see <a href="https://joery.nl">Joery.nl</a> as an example.
+  A collection of React components to easily display basic information about a GitHub user, repository, etc.<br><br>
+  This can, for example, be used to display the number of stars on a repository on your portfolio website. <br>See <a href="https://joery.nl">Joery.nl</a> for an example of this.
 </p>
 
 <h6 align="center">
@@ -12,7 +12,8 @@
 </h6>
 
 ## Features
-This library is not a widget; you can use the components to display a single piece of data and design your widget that suits your needs.
+This library is not a widget; you can use the components to display a single piece of data and integrate it into your webpage as desired
+
 - Easy to use
 - Data is fetched once for multiple components
 - Fetched data is cached
@@ -101,9 +102,7 @@ following</pre></td>
 ### Load and error callbacks
 If you want to do something in case an error occurs while fetching the data or the data is successfully loaded, you can use one of the following callback props:
 - onDataLoad
-- onDataError
-
-<i></i>
+- onDataError (<i>Note: does not include the error message due to the design of the library</i>)
 
 ### Loading and error content
 
