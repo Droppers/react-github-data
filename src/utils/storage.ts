@@ -11,13 +11,13 @@ const mapToObject = (map: Map<any, any>) => {
   return object;
 };
 
-export const removeData = (key: string): boolean => {
+export const removeFromStorage = (key: string): boolean => {
   if (!hasLocalStorage()) return false;
   window.localStorage.removeItem(key);
   return true;
 };
 
-export const saveData = (key: string, data: any): boolean => {
+export const saveToStorage = (key: string, data: any): boolean => {
   if (!hasLocalStorage()) return false;
 
   if (data instanceof Map) {
@@ -28,7 +28,7 @@ export const saveData = (key: string, data: any): boolean => {
   return true;
 };
 
-export const loadData = <T>(
+export const loadFromStorage = <T>(
   key: string,
   ctor?: new (...a: any) => T
 ): T | null => {

@@ -1,10 +1,15 @@
 import { STORAGE_PREFIX } from "@/constants";
 import { DataState } from "@/types/enums";
-import { loadData, removeData, saveData } from "@/utils/storage";
+import {
+  loadFromStorage,
+  removeFromStorage,
+  saveToStorage,
+} from "@/utils/storage";
 import Subscribable from "./Subscribable";
 
 interface IStoreEntry<T> {
   state: DataState;
+  version?: number;
   fetchedAt?: Date;
   data?: T;
 }
@@ -12,48 +17,50 @@ interface IStoreEntry<T> {
 class DataStore<T> extends Subscribable<IStoreEntry<T>> {
   private _storageKey: string;
   private _maxStorageAge: number;
-  private _data: Map<string, IStoreEntry<T>> = new Map();
+  private _version: number;
+  private _entries: Map<string, IStoreEntry<T>> = new Map();
 
   private _localStorageLoaded = false;
 
-  constructor(storageKey: string, maxCacheAge: number) {
+  constructor(storageKey: string, maxCacheAge: number, version = 1) {
     super();
     this._storageKey = storageKey;
     this._maxStorageAge = maxCacheAge;
+    this._version = version;
   }
 
   private loadLocalStorage() {
     this._localStorageLoaded = true;
-    const existingData = loadData<Map<string, IStoreEntry<T>>>(
+    const existingData = loadFromStorage<Map<string, IStoreEntry<T>>>(
       STORAGE_PREFIX + this._storageKey,
       Map
     );
     if (existingData !== null) {
       const now = new Date();
-      existingData.forEach((entry: IStoreEntry<T>) => {
-        if (!entry.fetchedAt) return;
+      existingData.forEach((entry: IStoreEntry<T>, key: string) => {
+        if (!entry.fetchedAt || this._version > (entry.version ?? 0)) return;
 
         const age = (+now - +new Date(entry.fetchedAt)) / 1000 / 60;
         entry.state =
           age > this._maxStorageAge ? DataState.Waiting : DataState.Fetched;
-      });
 
-      this._data = existingData;
+        this._entries.set(key, entry);
+      });
     }
   }
 
   private saveLocalStorage() {
     const storage = {};
-    this._data.forEach((value: IStoreEntry<T>, key: string) => {
+    this._entries.forEach((value: IStoreEntry<T>, key: string) => {
       if (value.data && Object.keys(value.data).length !== 0) {
-        storage[key] = value;
+        storage[key] = { ...value, version: this._version };
       }
     });
 
     if (Object.keys(storage).length !== 0) {
-      saveData(STORAGE_PREFIX + this._storageKey, storage);
+      saveToStorage(STORAGE_PREFIX + this._storageKey, storage);
     } else {
-      removeData(STORAGE_PREFIX + this._storageKey);
+      removeFromStorage(STORAGE_PREFIX + this._storageKey);
     }
   }
 
@@ -72,7 +79,7 @@ class DataStore<T> extends Subscribable<IStoreEntry<T>> {
   }
 
   private set(key: string, entry: IStoreEntry<T>): IStoreEntry<T> {
-    this._data.set(key, entry);
+    this._entries.set(key, entry);
     this.invoke(key, entry);
 
     this.saveLocalStorage();
@@ -84,14 +91,14 @@ class DataStore<T> extends Subscribable<IStoreEntry<T>> {
       this.loadLocalStorage();
     }
 
-    if (this._data.has(key)) {
-      return this._data.get(key) as IStoreEntry<T>;
+    if (this._entries.has(key)) {
+      return this._entries.get(key) as IStoreEntry<T>;
     }
 
     const entry = {
       state: DataState.Waiting,
     };
-    this._data.set(key, entry);
+    this._entries.set(key, entry);
     return entry;
   }
 
@@ -102,7 +109,6 @@ class DataStore<T> extends Subscribable<IStoreEntry<T>> {
       entry.state = DataState.Fetching;
       return true;
     }
-
     return false;
   }
 }

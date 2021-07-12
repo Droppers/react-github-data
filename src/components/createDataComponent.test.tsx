@@ -26,6 +26,7 @@ const FakeDataComponent = createDataComponent<
   }
 >(
   "GitHubRepo",
+  1,
   (props: IFakeProps) => FAKE_URL + "/" + props.identifier,
   (props: IFakeProps) => props.identifier,
   (_props: IFakeProps, data: IFakeData) => {

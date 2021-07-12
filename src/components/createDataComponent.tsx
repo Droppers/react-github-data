@@ -62,6 +62,7 @@ type BaseProps<TData> = IBaseProps<TData> &
 
 const createDataComponent = <TProps, TData, TResponse>(
   name: string,
+  version: number,
   createDataUrl: (props: TProps) => string,
   createIdentifier: (props: TProps) => string,
   getValue: (
@@ -70,7 +71,7 @@ const createDataComponent = <TProps, TData, TResponse>(
   ) => React.ReactElement | string | number | null,
   mapResponse: (data: TResponse) => TData
 ): React.FC<TProps & BaseProps<TData>> => {
-  const store = new DataStore<TData>(name, STORAGE_AGE_MINUTES);
+  const store = new DataStore<TData>(name, STORAGE_AGE_MINUTES, version);
 
   const Component: React.FC<TProps & BaseProps<TData>> = (
     props: TProps & BaseProps<TData>

@@ -1,6 +1,8 @@
 import { GITHUB_API_URL, MESSAGE_USE_DATA_OR_CONTENT_PROP } from "@/constants";
 import createDataComponent from "./createDataComponent";
 
+const COMPONENT_VERSION = 1;
+
 interface IRepoProps {
   user: string;
   repo: string;
@@ -27,6 +29,7 @@ interface IRepoResponse {
 
 const GitHubRepo = createDataComponent<IRepoProps, IRepoData, IRepoResponse>(
   "GitHubRepo",
+  COMPONENT_VERSION,
   (props: IRepoProps) =>
     GITHUB_API_URL + "/repos/" + props.user + "/" + props.repo,
   (props: IRepoProps) => props.user + "/" + props.repo,

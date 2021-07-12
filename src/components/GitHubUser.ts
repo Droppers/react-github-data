@@ -1,6 +1,8 @@
 import createDataComponent from "./createDataComponent";
 import { GITHUB_API_URL, MESSAGE_USE_DATA_OR_CONTENT_PROP } from "@/constants";
 
+const COMPONENT_VERSION = 1;
+
 interface IUserProps {
   user: string;
   data?: "followers" | "following";
@@ -18,6 +20,7 @@ interface IUserResponse {
 
 const GitHubUser = createDataComponent<IUserProps, IUserData, IUserResponse>(
   "GitHubUser",
+  COMPONENT_VERSION,
   (props: IUserProps) => GITHUB_API_URL + "/users/" + props.user,
   (props: IUserProps) => props.user,
   (props: IUserProps, data: IUserData) => {
