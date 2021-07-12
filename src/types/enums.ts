@@ -1,6 +1,6 @@
-export enum FetchingState {
-    Loading,
-    Loaded,
-    Error,
-    Invalidate
+export enum DataState {
+  Waiting,
+  Fetching,
+  Fetched,
+  Error,
 }

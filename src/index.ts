@@ -1,9 +1,5 @@
-import createGitHubComponent from "./components/base/createGitHubComponent";
+import createDataComponent from "./components/createDataComponent";
 import GitHubRepo from "./components/GitHubRepo";
 import GitHubUser from "./components/GitHubUser";
 
-export {
-    createGitHubComponent,
-    GitHubRepo,
-    GitHubUser
-}
+export { createDataComponent, GitHubRepo, GitHubUser };

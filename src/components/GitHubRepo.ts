@@ -1,49 +1,68 @@
-import createGitHubComponent from "./base/createGitHubComponent";
-import { GITHUB_API_URL } from "../constants";
-import { IGitHubData, IProps } from "../types/types";
+import { GITHUB_API_URL, MESSAGE_USE_DATA_OR_CONTENT_PROP } from "@/constants";
+import createDataComponent from "./createDataComponent";
 
-interface IRepoProps extends IProps {
-    user: string;
-    repo: string;
-    type: "description" | "language" | "stars" | "watchers" | "forks";
+interface IRepoProps {
+  user: string;
+  repo: string;
+  data?: "name" | "description" | "language" | "stars" | "watchers" | "forks";
 }
 
-interface IRepoData extends IGitHubData {
-    description: string;
-    language: string;
-    stars: number;
-    watchers: number;
-    forks: number;
+interface IRepoData {
+  name: string;
+  description: string;
+  language: string;
+  stars: number;
+  watchers: number;
+  forks: number;
 }
 
-const GitHubRepo = createGitHubComponent<
-    IRepoProps,
-    IRepoData,
-    { description: string; language: string; stargazers_count: number; subscribers_count: number; forks: number; }
->(
-    "GitHubRepo",
-    (props: IRepoProps) => GITHUB_API_URL + "/repos/" + props.user + "/" + props.repo,
-    (props: IRepoProps) => props.user + "/" + props.repo,
-    (props: IRepoProps, data: IRepoData) => {
-        switch (props.type) {
-            case "description":
-                return data.description;
-            case "language":
-                return data.language;
-            case "stars":
-                return data.stars;
-            case "watchers":
-                return data.watchers;
-            case "forks":
-                return data.forks;
-        }
-    },
-    ({ description, language, stargazers_count, subscribers_count, forks }) => ({
-        description: description,
-        language: language,
-        stars: stargazers_count,
-        watchers: subscribers_count,
-        forks: forks
-    }));
+interface IRepoResponse {
+  name: string;
+  description: string;
+  language: string;
+  stargazers_count: number;
+  subscribers_count: number;
+  forks: number;
+}
+
+const GitHubRepo = createDataComponent<IRepoProps, IRepoData, IRepoResponse>(
+  "GitHubRepo",
+  (props: IRepoProps) =>
+    GITHUB_API_URL + "/repos/" + props.user + "/" + props.repo,
+  (props: IRepoProps) => props.user + "/" + props.repo,
+  (props: IRepoProps, data: IRepoData) => {
+    switch (props.data) {
+      case "name":
+        return data.name;
+      case "description":
+        return data.description;
+      case "language":
+        return data.language;
+      case "stars":
+        return data.stars;
+      case "watchers":
+        return data.watchers;
+      case "forks":
+        return data.forks;
+      default:
+        return MESSAGE_USE_DATA_OR_CONTENT_PROP;
+    }
+  },
+  ({
+    name,
+    description,
+    language,
+    stargazers_count,
+    subscribers_count,
+    forks,
+  }) => ({
+    name,
+    description,
+    language,
+    stars: stargazers_count,
+    watchers: subscribers_count,
+    forks,
+  })
+);
 
 export default GitHubRepo;

@@ -1,7 +1,7 @@
 {
   "name": "react-github-data",
   "version": "1.0.0",
-  "description": "A collection of GitHub components to easily display basic information about a GitHub user or repository.",
+  "description": "A collection of React components to easily display basic information about a GitHub user, repository, etc.",
   "author": "Joery Droppers",
   "repository": {
     "type": "git",
@@ -12,33 +12,42 @@
     "github",
     "data",
     "info",
-    "information"
+    "information",
+    "components"
   ],
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "types": "./lib/esm/index.d.ts",
   "scripts": {
-    "clean": "rimraf lib/",
-    "build": "yarn run clean && yarn run build:esm && yarn run build:cjs",
-    "build:esm": "tsc",
-    "build:cjs": "tsc --module commonjs --outDir lib/cjs"
+    "local": "yarn run build && yalc push",
+    "build": "yarn run build:esm && yarn run build:cjs",
+    "build:esm": "rimraf lib/esm && tsc && tsc-alias",
+    "build:cjs": "rimraf lib/cjs && tsc --module commonjs --outDir lib/cjs && tsc-alias --dir lib/cjs",
+    "test": "jest"
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/enzyme": "^3.10.9",
+    "@types/jest": "^26.0.24",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.2",
+    "enzyme": "^3.11.0",
     "eslint": "^7.28.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^27.0.6",
+    "jest-fetch-mock": "^3.0.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
-    "typescript": "^4.3.4"
+    "ts-jest": "^27.0.3",
+    "tsc-alias": "^1.3.7",
+    "typescript": "^4.3.5"
   },
-  "dependencies": {
-    "classnames": "^2.3.1",
-    "react-hooks-global-state": "^1.0.1"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2"

@@ -12,6 +12,7 @@
 </h6>
 
 ## Features
+
 This library is not a widget; you can use the components to display a single piece of data and integrate it into your webpage as desired
 
 - Easy to use
@@ -20,30 +21,63 @@ This library is not a widget; you can use the components to display a single pie
 - Easy to style and customize with CSS
 
 ## Installation
+
 ### NPM
+
 ```
 npm install react-github-data
 ```
 
 ### Yarn
+
 ```
 yarn add react-github-data
 ```
 
-## Usage
+## Example
+
+```jsx
+import { GitHubRepo } from "react-github-data";
+```
+
+<b>Display stars</b>
+
+```jsx
+<GitHubRepo user="Droppers" repo="AnimatedBottomBar" data="stars" />
+```
+
+<b>Display custom content</b>
+
+```jsx
+<GitHubRepo
+  user="Droppers"
+  repo="AnimatedBottomBar"
+  content={(data) => (
+    <>
+      The <b>{data.name}</b> repo has <b>{data.stars}</b> stars and
+      <b>{data.forks}</b>forks!
+    </>
+  )}
+/>
+```
+
+## Available components
+
 ### GitHubRepo
 
 To display information about a repository use the `GitHubRepo` component.
+
 ```jsx
 import { GitHubRepo } from 'react-github-data';
 ...
 <GitHubRepo
   user="Droppers"
   repo="AnimatedBottomBar"
-  type="stars" />
+  data="stars" />
 ```
 
-#### Required props
+#### Props
+
 <table>
   <tr>
     <th>Property</th>
@@ -58,13 +92,15 @@ import { GitHubRepo } from 'react-github-data';
     <td>A repository name owned by the user set in the <b>user</b> prop.</td>
   </tr>
   <tr>
-    <td>type</td>
-    <td>The type of information about the repository to display, the following values are possible: 
-        <pre>description
-language
-stars
-watchers
-forks</pre></td>
+    <td>data</td>
+    <td>The data about the repository to display, the following values are possible: 
+      <ul>
+        <li>description</li>
+        <li>language</li>
+        <li>stars</li>
+        <li>watchers</li>
+        <li>forks</li>
+      </ul></td>
   </tr>
 </table>
 
@@ -77,10 +113,11 @@ import { GitHubUser } from 'react-github-data';
 ...
 <GitHubUser
   user="Droppers"
-  type="followers" />
+  data="followers" />
 ```
 
-#### Required props
+#### Props
+
 <table>
   <tr>
     <th>Property</th>
@@ -91,23 +128,32 @@ import { GitHubUser } from 'react-github-data';
     <td>The name of the user you want to display information of.</td>
   </tr>
   <tr>
-    <td>type</td>
-    <td>The type of information about the user to display, the following values are possible: 
-        <pre>followers
-following</pre></td>
+    <td>data</td>
+    <td>The data about the user to display, following values are possible: 
+      <ul>
+        <li>followers</li>
+        <li>following</li>
+      </ul>
+    </td>
   </tr>
 </table>
 
 ## Customization
+
+### Custom content
+
+As shown in the example in the beginning, it is also possible to use one component to display all information desired. For this the `content` prop can be used, this props expects a function with the fetched data as argument.
+
 ### Load and error callbacks
+
 If you want to do something in case an error occurs while fetching the data or the data is successfully loaded, you can use one of the following callback props:
+
 - onDataLoad
 - onDataError (<i>Note: does not include the error message due to the design of the library</i>)
 
 ### Loading and error content
 
 By default, the content of the component will be empty when loading or when an error occurs. To change the default content for these situations, you can use the props demonstrated in the example below.
-
 
 ```jsx
 import { GitHubUser } from 'react-github-data';
@@ -118,7 +164,8 @@ import { GitHubUser } from 'react-github-data';
 ```
 
 ### Styling
-There are also several standard styleable classes that you can use, and you can use your own using the `className` prop. The inner HTML element of this component is a `span` element; this allows you to use the component inline with text.
+
+There are also several standard styleable classes that you can use, and you can use your own using the `className` prop. The inner HTML element of this component is a `div` element.
 
 <table>
   <tr>
@@ -126,62 +173,93 @@ There are also several standard styleable classes that you can use, and you can 
     <th>Description</th>
   </tr>
   <tr>
-    <td>github-<i>[user|repo]</i></td>
+    <td>gh-data</td>
+    <td>All components have this class by default.</td>
+  </tr>
+  <tr>
+    <td>gh-<i>[user|repo]</i></td>
     <td>Postfix of this class depends on the component you use. This class is always present.</td>
   </tr>
   <tr>
-    <td>github-loading</i></td>
-    <td>This class will be present when the component is loading information from GitHub.</td>
+    <td>gh-loading</i></td>
+    <td>This class will be present when the component is fetching information from GitHub.</td>
   </tr>
   <tr>
-    <td>github-loaded</i></td>
-    <td>This class will be present when the component succesfully retrieved the information from GitHub.</td>
+    <td>gh-loaded</i></td>
+    <td>This class will be present when the component succesfully fetched the information from GitHub.</td>
   </tr>
   <tr>
-    <td>github-error</i></td>
+    <td>gh-error</i></td>
     <td>This class will be present when the component failed to load information from GitHub.</td>
   </tr>
 </table>
 
 ## Example
+
 <img src="./art/example.svg" width="300px">
 
 Below is an example of JSX and CSS on how to recreate the widget shown above.
 
 <b>JSX</b>
+There are two methods you can use, you can use multiple components, as demonstrated in the first example, or use the `content` prop to use one component to display more information, as demonstrated in the second example.
+
 ```jsx
-import React from 'react';
-import { GitHubRepo } from 'react-github-data';
+import React from "react";
+import { GitHubRepo } from "react-github-data";
 
 export default function App() {
   const user = "Droppers";
   const repo = "AnimatedBottomBar";
 
   return (
-    <div className="github-card">
-      <div className="name">AnimatedBottomBar</div>
-      <div className="description">
-        <GitHubRepo user={user} repo={repo} type="description" />
+    <>
+      <h1>Example one</h1>
+      <div className="github-card">
+        <div className="name">AnimatedBottomBar</div>
+        <div className="description">
+          <GitHubRepo user={user} repo={repo} data="description" />
+        </div>
+        <div className="info">
+          <GitHubRepo user={user} repo={repo} data="language" />
+          <img alt="Stars" src="https://svgshare.com/i/YQV.svg" />
+          <GitHubRepo user={user} repo={repo} data="stars" />
+          <img alt="Forks" src="https://svgshare.com/i/YNP.svg" />
+          <GitHubRepo user={user} repo={repo} data="forks" />
+        </div>
       </div>
-      <div className="info">
-        <GitHubRepo user={user} repo={repo} type="language" />
-        <img alt="Stars" src="https://svgshare.com/i/YQV.svg" />
-        <GitHubRepo user={user} repo={repo} type="stars" />
-        <img alt="Forks" src="https://svgshare.com/i/YNP.svg" />
-        <GitHubRepo user={user} repo={repo} type="forks" />
-      </div>
-    </div>
+
+      <h1>Example two</h1>
+      <GitHubRepo
+        className="github-card"
+        user={user}
+        repo={repo}
+        content={(data) => (
+          <>
+            <div className="name">{data.name}</div>
+            <div className="description">{data.description}</div>
+            <div className="info">
+              {data.language}
+              <img alt="Stars" src="https://svgshare.com/i/YQV.svg" />
+              {data.stars}
+              <img alt="Forks" src="https://svgshare.com/i/YNP.svg" />
+              {data.forks}
+            </div>
+          </>
+        )}
+      />
+    </>
   );
 }
 ```
 
 <b>CSS</b>
+
 ```css
 .github-card {
   width: 400px;
   padding: 15px;
   background-color: white;
-  border: 1px solid #BBB;
+  border: 1px solid #bbb;
   border-radius: 10px;
   font: 14px Arial;
 }
@@ -195,7 +273,7 @@ export default function App() {
   margin: 10px 0;
 }
 
-.github-card .info span {
+.github-card .info div {
   margin-right: 10px;
 }
 .github-card .info img {
@@ -205,6 +283,7 @@ export default function App() {
 ```
 
 ## License
+
 ```
 MIT License
 
