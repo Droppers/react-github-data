@@ -7,6 +7,8 @@ import {
 } from "@/utils/storage";
 import Subscribable from "./Subscribable";
 
+const DEFAULT_VERSION = 1;
+
 interface IStoreEntry<T> {
   state: DataState;
   version?: number;
@@ -22,7 +24,11 @@ class DataStore<T> extends Subscribable<IStoreEntry<T>> {
 
   private _localStorageLoaded = false;
 
-  constructor(storageKey: string, maxCacheAge: number, version = 1) {
+  constructor(
+    storageKey: string,
+    maxCacheAge: number,
+    version = DEFAULT_VERSION
+  ) {
     super();
     this._storageKey = storageKey;
     this._maxStorageAge = maxCacheAge;
@@ -35,18 +41,22 @@ class DataStore<T> extends Subscribable<IStoreEntry<T>> {
       STORAGE_PREFIX + this._storageKey,
       Map
     );
-    if (existingData !== null) {
-      const now = new Date();
-      existingData.forEach((entry: IStoreEntry<T>, key: string) => {
-        if (!entry.fetchedAt || this._version > (entry.version ?? 0)) return;
+    if (existingData === null) return;
 
-        const age = (+now - +new Date(entry.fetchedAt)) / 1000 / 60;
-        entry.state =
-          age > this._maxStorageAge ? DataState.Waiting : DataState.Fetched;
+    const now = new Date();
+    existingData.forEach((entry: IStoreEntry<T>, key: string) => {
+      if (
+        !entry.fetchedAt ||
+        this._version > (entry.version ?? DEFAULT_VERSION)
+      )
+        return;
 
-        this._entries.set(key, entry);
-      });
-    }
+      const age = (+now - +new Date(entry.fetchedAt)) / 1000 / 60;
+      entry.state =
+        age > this._maxStorageAge ? DataState.Waiting : DataState.Fetched;
+
+      this._entries.set(key, entry);
+    });
   }
 
   private saveLocalStorage() {
