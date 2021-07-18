@@ -51,7 +51,7 @@ const GitHubRepo = createDataComponent<IRepoProps, IRepoData, IRepoResponse>(
   (props: IRepoProps, data: IRepoData) => {
     if (!props.data) {
       return MESSAGE_USE_DATA_OR_CONTENT_PROP;
-    } else if (props.data in PROPERTIES) {
+    } else if (PROPERTIES.indexOf(props.data) !== -1) {
       return data[props.data];
     } else {
       return invalidDataProp(PROPERTIES);

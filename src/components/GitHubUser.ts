@@ -10,7 +10,15 @@ const COMPONENT_VERSION = 1;
 
 interface IUserProps {
   user: string;
-  data?: "followers" | "following";
+  data?:
+    | "avatar"
+    | "username"
+    | "name"
+    | "bio"
+    | "website"
+    | "location"
+    | "followers"
+    | "following";
 }
 
 interface IUserData {
@@ -55,7 +63,7 @@ const GitHubUser = createDataComponent<IUserProps, IUserData, IUserResponse>(
   (props: IUserProps, data: IUserData) => {
     if (!props.data) {
       return MESSAGE_USE_DATA_OR_CONTENT_PROP;
-    } else if (props.data in PROPERTIES) {
+    } else if (PROPERTIES.indexOf(props.data) !== -1) {
       return data[props.data];
     } else {
       return invalidDataProp(PROPERTIES);
