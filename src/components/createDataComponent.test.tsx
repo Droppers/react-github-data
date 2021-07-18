@@ -25,8 +25,9 @@ const FakeDataComponent = createDataComponent<
     forks: number;
   }
 >(
-  "GitHubRepo",
   1,
+  "GitHubRepo",
+  "test",
   (props: IFakeProps) => FAKE_URL + "/" + props.identifier,
   (props: IFakeProps) => props.identifier,
   (_props: IFakeProps, data: IFakeData) => {
@@ -40,19 +41,28 @@ const FakeDataComponent = createDataComponent<
 
 const wait = async (time: number) => new Promise((r) => setTimeout(r, time));
 
+const IDENTIFIER_ONE = "identifier-one";
+const IDENTIFIER_TWO = "identifier-two";
+const IDENTIFIER_ZERO = "identifier-zero";
+
 // I had to wrap everything in act() for React to not complain, I am not sure why.
 describe("'createDataComponent()' tests", () => {
   beforeEach(() => {
     fetchMock.mockResponse(async (req) => {
-      if (req.url.endsWith("identifier-one")) {
+      if (req.url.endsWith(IDENTIFIER_ONE)) {
         return JSON.stringify({
           forks: 123,
           starts: 321,
         });
-      } else if (req.url.endsWith("identifier-two")) {
+      } else if (req.url.endsWith(IDENTIFIER_TWO)) {
         return JSON.stringify({
           forks: 999,
           starts: 777,
+        });
+      } else if (req.url.endsWith(IDENTIFIER_ZERO)) {
+        return JSON.stringify({
+          forks: 0,
+          starts: 0,
         });
       } else {
         return {
@@ -65,30 +75,38 @@ describe("'createDataComponent()' tests", () => {
 
   test("renders data", async () => {
     await act(async () => {
-      const wrapper = mount(<FakeDataComponent identifier="identifier-one" />);
+      const wrapper = mount(<FakeDataComponent identifier={IDENTIFIER_ONE} />);
       await wait(100);
       expect(wrapper.text()).toBe("123");
     });
   });
 
+  test("renders data if zero", async () => {
+    await act(async () => {
+      const wrapper = mount(<FakeDataComponent identifier={IDENTIFIER_ZERO} />);
+      await wait(100);
+      expect(wrapper.text()).toBe("0");
+    });
+  });
+
   test("renders data for new props", async () => {
     await act(async () => {
-      const wrapper = mount(<FakeDataComponent identifier="identifier-one" />);
+      const wrapper = mount(<FakeDataComponent identifier={IDENTIFIER_ONE} />);
       await wait(100);
       expect(wrapper.text()).toBe("123");
-      wrapper.setProps({ identifier: "identifier-two" });
+      wrapper.setProps({ identifier: IDENTIFIER_TWO });
       await wait(100);
       expect(wrapper.text()).toBe("999");
     });
   });
 
   describe("callbacks", () => {
-    test("onDataLoad callback is called", async () => {
+    test("onDataLoad is called", async () => {
       return new Promise<void>(async (resolve) => {
         await act(async () => {
           mount(
             <FakeDataComponent
-              identifier="identifier-one"
+              identifier={IDENTIFIER_ONE}
               onDataLoad={() => {
                 resolve();
               }}
@@ -98,7 +116,7 @@ describe("'createDataComponent()' tests", () => {
       });
     }, 300);
 
-    test("onDataError callback is called", async () => {
+    test("onDataError is called", async () => {
       return new Promise<void>(async (resolve) => {
         await act(async () => {
           const spy = jest.spyOn(console, "error").mockImplementation();

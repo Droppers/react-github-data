@@ -7,23 +7,27 @@ import { DataState } from "@/types/enums";
 import classNames from "@/utils/classnames";
 
 const getClasses = (
+  classNamePrefix: string,
   name: string,
   fetchingState: DataState,
   initialClass: string | undefined
 ): string[] => {
-  const classes: string[] = ["gh-data", `gh-${name}`];
+  const classes: string[] = [
+    classNamePrefix + "-data",
+    `${classNamePrefix}-${name}`,
+  ];
   if (initialClass) {
     classes.push(initialClass);
   }
   switch (fetchingState) {
     case DataState.Fetching:
-      classes.push("gh-loading");
+      classes.push(classNamePrefix + "-loading");
       break;
     case DataState.Fetched:
-      classes.push("gh-loaded");
+      classes.push(classNamePrefix + "-loaded");
       break;
     case DataState.Error:
-      classes.push("gh-error");
+      classes.push(classNamePrefix + "-error");
       break;
   }
   return classes;
@@ -35,7 +39,7 @@ const getContent = (
   loading?: React.ReactElement | string,
   error?: React.ReactElement | string
 ): React.ReactElement | string => {
-  if (value != null) {
+  if (value !== null) {
     return value;
   } else if (fetching === DataState.Fetching && loading) {
     return loading;
@@ -61,8 +65,9 @@ type BaseProps<TData> = IBaseProps<TData> &
   React.HTMLAttributes<HTMLDivElement>;
 
 const createDataComponent = <TProps, TData, TResponse>(
-  name: string,
   version: number,
+  name: string,
+  classNamePrefix: string,
   createDataUrl: (props: TProps) => string,
   createIdentifier: (props: TProps) => string,
   getValue: (
@@ -113,14 +118,19 @@ const createDataComponent = <TProps, TData, TResponse>(
       content = props.content(entry.data);
     } else {
       const value = entry.data ? getValue(props, entry.data) : null;
-      content = value ? defaultFormatter(value) : null;
+      content = value !== null ? defaultFormatter(value) : null;
     }
 
     return (
       <div
         id={props.id}
         className={classNames(
-          getClasses(getClassName(name), entry.state, props.className)
+          getClasses(
+            classNamePrefix,
+            getClassName(name),
+            entry.state,
+            props.className
+          )
         )}
       >
         {getContent(entry.state, content, props.loading, props.error)}
