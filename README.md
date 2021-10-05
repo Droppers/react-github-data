@@ -20,20 +20,6 @@ This library is not a widget; you can use the components to display a single pie
 - Fetched data is cached
 - Easy to style and customize with CSS
 
-## Installation
-
-### NPM
-
-```
-npm install react-github-data
-```
-
-### Yarn
-
-```
-yarn add react-github-data
-```
-
 ## Example
 
 ```jsx
